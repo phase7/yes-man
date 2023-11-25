@@ -5,11 +5,13 @@ from fastapi import FastAPI
 app = FastAPI()
 
 
-@app.get("/")
-async def read_root():
-    return {"Hello": "World"}
+logger: Callable = log_requests(app) 
+exception_handler: Callable = handle_exceptions(app)
 
+@app.get("/{path}")
+async def get_handler(path: str) -> Dict[str, str]:
+    return {"path": path}
 
-@app.get("/items/{item_id}")
-async def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+@app.post("/{path}")
+async def post_handler(path: str) -> Dict[str, str]:
+    return {"path": path}
