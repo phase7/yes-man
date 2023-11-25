@@ -1,28 +1,26 @@
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from typing import Callable, Dict, Any
-from starlette.responses import Response as StarletteResponse
+from typing import Callable
+from starlette.responses import JSONResponse
 import logging
 
-def log_requests(app: FastAPI) -> Callable[[Request, Callable], StarletteResponse]:
+def log_requests(app: FastAPI) -> Callable:
     logger = logging.getLogger("requests")
 
     @app.middleware("http") 
-    async def log_requests_middleware(request: Request, call_next: Callable) -> StarletteResponse:
+    async def log_requests_middleware(request: Request, call_next: Callable) -> JSONResponse:
         logger.info(f"{request.method} {request.url}")
-        response: StarletteResponse = await call_next(request)
-        return response
+        response = await call_next(request)
+        return JSONResponse(content=response.body, status_code=200)
 
     return logger.info
 
-
-def handle_exceptions(app: FastAPI) -> Callable[[Request, Exception], str]:
+def handle_exceptions(app: FastAPI) -> Callable:
     @app.exception_handler(Exception)
-    async def handle_exceptions_middleware(request: Request, exc: Exception) -> str:
-        return "OK"
-    
-    return print
+    async def handle_exceptions_middleware(request: Request, exc: Exception) -> JSONResponse:
+        return JSONResponse(content="OK", status_code=200)
 
+    return print
 
 app: FastAPI = FastAPI()
 
@@ -33,14 +31,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 logger: Callable = log_requests(app) 
 exception_handler: Callable = handle_exceptions(app)
 
 @app.get("/{path}")
-async def get_handler(path: str) -> Dict[str, str]:
+async def get_handler(path: str) -> dict[str, str]:
     return {"path": path}
 
 @app.post("/{path}")
-async def post_handler(path: str) -> Dict[str, str]:
+async def post_handler(path: str) -> dict[str, str]:
     return {"path": path}
