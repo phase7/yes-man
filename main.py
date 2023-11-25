@@ -1,8 +1,37 @@
-from typing import Union
+from fastapi import FastAPI, Request, Response
+from fastapi.middleware.cors import CORSMiddleware
+from typing import Callable, Dict, Any
+from starlette.responses import Response as StarletteResponse
+import logging
 
-from fastapi import FastAPI
+def log_requests(app: FastAPI) -> Callable[[Request, Callable], StarletteResponse]:
+    logger = logging.getLogger("requests")
 
-app = FastAPI()
+    @app.middleware("http") 
+    async def log_requests_middleware(request: Request, call_next: Callable) -> StarletteResponse:
+        logger.info(f"{request.method} {request.url}")
+        response: StarletteResponse = await call_next(request)
+        return response
+
+    return logger.info
+
+
+def handle_exceptions(app: FastAPI) -> Callable[[Request, Exception], str]:
+    @app.exception_handler(Exception)
+    async def handle_exceptions_middleware(request: Request, exc: Exception) -> str:
+        return "OK"
+    
+    return print
+
+
+app: FastAPI = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware, 
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 logger: Callable = log_requests(app) 
