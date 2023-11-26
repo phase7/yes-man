@@ -1,4 +1,9 @@
+"""
+Stay positive
+"""
 import logging
+from typing import Callable, Coroutine
+
 from fastapi import FastAPI, Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 
@@ -12,7 +17,23 @@ logger.setLevel(logging.DEBUG)
 
 
 class PrintGetRequestDetailsMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next):
+    """
+    Middleware that logs the details of GET requests and handles requests for favicon.ico.
+    """
+
+    async def dispatch(
+        self, request: Request, call_next: Callable[..., Coroutine]
+    ) -> Response:
+        """
+        Processes a request and returns a response.
+
+        Args:
+            request: The incoming request.
+            call_next: A callable that will process the request and return a response.
+
+        Returns:
+            The response to the request.
+        """
         if "favicon.ico" in request.url.path:
             return Response(content="favicon")
         logger.debug(f"{request.method=} {request.url.path=}")
