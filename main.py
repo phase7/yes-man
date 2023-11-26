@@ -16,7 +16,7 @@ logger.addHandler(handler)
 logger.setLevel(logging.DEBUG)
 
 
-class PrintGetRequestDetailsMiddleware(BaseHTTPMiddleware):
+class LogRequestDetailsMiddleware(BaseHTTPMiddleware):
     """
     Middleware that logs the details of GET requests and handles requests for favicon.ico.
     """
@@ -41,4 +41,4 @@ class PrintGetRequestDetailsMiddleware(BaseHTTPMiddleware):
 
 
 app = FastAPI()
-app.add_middleware(PrintGetRequestDetailsMiddleware)
+app.add_middleware(LogRequestDetailsMiddleware)
