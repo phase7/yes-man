@@ -1,45 +1,44 @@
+"""
+Stay positive
+"""
+import logging
+from typing import Callable, Coroutine
+
 from fastapi import FastAPI, Request, Response
-from fastapi.middleware.cors import CORSMiddleware
-from typing import Callable, NoReturn
-from starlette.responses import JSONResponse
+from starlette.middleware.base import BaseHTTPMiddleware
 
-app: FastAPI = FastAPI()
+handler = logging.FileHandler("yes.log.csv", "a", "utf-8")
+formatter = logging.Formatter("%(asctime)s,%(thread)d,%(levelname)s,%(message)s")
+handler.setFormatter(formatter)
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+logger = logging.getLogger("yes-man")
+logger.addHandler(handler)
+logger.setLevel(logging.DEBUG)
 
 
-def log_requests(app: FastAPI) -> NoReturn:
-    @app.middleware("http")
-    async def log_requests_middleware(
-        request: Request, call_next: Callable
+class PrintGetRequestDetailsMiddleware(BaseHTTPMiddleware):
+    """
+    Middleware that logs the details of GET requests and handles requests for favicon.ico.
+    """
+
+    async def dispatch(
+        self, request: Request, call_next: Callable[..., Coroutine]
     ) -> Response:
-        print(request.url)
-        response: Response = await call_next(request)
-        return response
+        """
+        Processes a request and returns a response.
+
+        Args:
+            request: The incoming request.
+            call_next: A callable that will process the request and return a response.
+
+        Returns:
+            The response to the request.
+        """
+        if "favicon.ico" in request.url.path:
+            return Response(content="favicon")
+        logger.debug(f"{request.method=} {request.url.path=}")
+        return Response(content="OK")
 
 
-def handle_exceptions(app: FastAPI) -> NoReturn:
-    @app.exception_handler(Exception)
-    async def handle_exceptions_middleware(
-        request: Request, exc: Exception
-    ) -> JSONResponse:
-        return JSONResponse(content="exception occurred in code", status_code=200)
-
-
-log_requests(app)
-handle_exceptions(app)
-
-
-@app.get("/{path}")
-async def get_handler(path: str) -> dict[str, str]:
-    return {"path": path}
-
-
-@app.post("/{path}")
-async def post_handler(path: str) -> dict[str, str]:
-    return {"path": path}
+app = FastAPI()
+app.add_middleware(PrintGetRequestDetailsMiddleware)
