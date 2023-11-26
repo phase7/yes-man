@@ -13,7 +13,7 @@ handler.setFormatter(formatter)
 
 logger = logging.getLogger("yes-man")
 logger.addHandler(handler)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 
 class PrintGetRequestDetailsMiddleware(BaseHTTPMiddleware):
@@ -36,7 +36,7 @@ class PrintGetRequestDetailsMiddleware(BaseHTTPMiddleware):
         """
         if "favicon.ico" in request.url.path:
             return Response(content="favicon")
-        logger.debug(f"{request.method};{request.url.path}")
+        logger.info(f"{request.method};{request.url.path}")
         return Response(content="OK")
 
 
