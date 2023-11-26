@@ -75,6 +75,17 @@ jupyter = ["ipython (>=7.8.0)", "tokenize-rt (>=3.2.0)"]
 uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
+name = "boltons"
+version = "23.1.1"
+description = "When they're not builtins, they're boltons."
+optional = false
+python-versions = "*"
+files = [
+    {file = "boltons-23.1.1-py2.py3-none-any.whl", hash = "sha256:80a8cd930ff21fbf03545b9863e5799d0c3e7e0e3b2546bdaf2efccd7b3708cc"},
+    {file = "boltons-23.1.1.tar.gz", hash = "sha256:d2cb2fa83cf2ebe791be1e284183e8a43a1031355156a968f8e0a333ad2448fc"},
+]
+
+[[package]]
 name = "certifi"
 version = "2023.11.17"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -1395,4 +1406,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "7e6c2e0d1ebf69a724d01792b51b0cbf06697ae7f4f23ea4a7b00c1b88609c03"
+content-hash = "0192f8fbcb130579a00ba2b52c879a26a63d9e1583cf22274a2a735779965db4"
