@@ -1,0 +1,7 @@
+services:
+  yes-man:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./yes.log.csv:/app/yes.log.csv
