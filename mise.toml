@@ -5,12 +5,14 @@ python = "3.12"
 _.python.venv = { path = ".venv", create = true }
 
 [tasks]
-test = "poetry run pytest"
-run = "poetry run uvicorn main:app --reload"
+test = "uv run pytest"
+run = "uv run uvicorn main:app --reload"
 "deploy:docker-local" = "docker compose up --build"
 
 [tasks."smoke-test"]
 run = """
+  # Ensure yes.log.csv is a file, not a directory (Docker bind-mount creates a dir if absent)
+  [ -d yes.log.csv ] && rm -rf yes.log.csv
   touch yes.log.csv
   docker compose up -d --build
   sleep 3
@@ -18,5 +20,7 @@ run = """
   curl -sf http://localhost:8000/ | grep -q 'OK' || FAIL=1
   curl -sf http://localhost:8000/hello | grep -q 'OK' || FAIL=1
   docker compose down
+  # Post-run cleanup: remove directory if Docker recreated it as one
+  [ -d yes.log.csv ] && rm -rf yes.log.csv && touch yes.log.csv
   [ $FAIL -eq 0 ] && echo 'Smoke test passed' || (echo 'Smoke test FAILED'; exit 1)
 """

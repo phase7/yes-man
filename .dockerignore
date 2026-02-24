@@ -9,6 +9,7 @@ tests
 .ruff_cache
 *.log.csv
 poetry-installer-error-*.log
+poetry.lock
 .vscode
 .gemini
 .opencode
